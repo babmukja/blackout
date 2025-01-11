@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import { Skeleton } from "@chakra-ui/react";
+import { GeoFence } from "../api/data/route";
 
 const containerStyle = {
   width: "100%",
@@ -24,8 +25,24 @@ const zoomLevel = 17;
 
 const CustomUI = ({ position }: { position: LatLng }) => {
   const [style, setStyle] = useState({});
+  const [data, setData] = useState<GeoFence | null>(null);
 
   useEffect(() => {
+    // 데이터
+    fetch("/api/data")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setData(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
     // Google Maps Projection을 활용하여 UI 위치 계산
     const overlay = new google.maps.OverlayView();
     overlay.onAdd = function () {};
