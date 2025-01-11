@@ -10,10 +10,11 @@ const containerStyle = {
   height: "50vh",
 };
 
+
 type LatLng = {
   lat: number;
   lng: number;
-}
+};
 
 const center: LatLng = {
   // 은마사거리
@@ -63,8 +64,96 @@ export default function Page() {
   const mapRef = useRef<google.maps.Map>(null);
   const [data, setData] = useState<GeoFence | null>(null);
 
-  const onLoad = (map: any) => {
+  const onLoad = (map: google.maps.Map) => {
     mapRef.current = map;
+
+    class SVGOverlay extends google.maps.OverlayView {
+      private bounds: google.maps.LatLngBounds;
+      private iconPath: string;
+      private div?: HTMLElement;
+
+      constructor(bounds: google.maps.LatLngBounds, iconPath: string) {
+        super();
+        this.bounds = bounds;
+        this.iconPath = iconPath;
+      }
+
+      onAdd() {
+        this.div = document.createElement("div");
+        this.div.style.borderStyle = "none";
+        this.div.style.borderWidth = "0px";
+        this.div.style.position = "absolute";
+
+        const img = document.createElement("img");
+        img.src = this.iconPath;
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.position = "absolute";
+        this.div.appendChild(img);
+
+        const panes = this.getPanes()!;
+        panes.overlayLayer.appendChild(this.div);
+      }
+
+      draw() {
+        const overlayProjection = this.getProjection();
+        const sw = overlayProjection.fromLatLngToDivPixel(this.bounds.getSouthWest())!;
+        const ne = overlayProjection.fromLatLngToDivPixel(this.bounds.getNorthEast())!;
+
+        if (this.div) {
+          this.div.style.left = sw.x + "px";
+          this.div.style.top = ne.y + "px";
+          this.div.style.width = ne.x - sw.x + "px";
+          this.div.style.height = sw.y - ne.y + "px";
+        }
+      }
+
+      onRemove() {
+        if (this.div) {
+          (this.div.parentNode as HTMLElement).removeChild(this.div);
+          delete this.div;
+        }
+      }
+
+      hide() {
+        if (this.div) {
+          this.div.style.visibility = "hidden";
+        }
+      }
+
+      show() {
+        if (this.div) {
+          this.div.style.visibility = "visible";
+        }
+      }
+
+      toggle() {
+        if (this.div) {
+          if (this.div.style.visibility === "hidden") {
+            this.show();
+          } else {
+            this.hide();
+          }
+        }
+      }
+
+      toggleDOM(map: google.maps.Map) {
+        if (this.getMap()) {
+          this.setMap(null);
+        } else {
+          this.setMap(map);
+        }
+      }
+    }
+
+    const bounds = new google.maps.LatLngBounds(
+      new google.maps.LatLng(37.498, 127.060),
+      new google.maps.LatLng(37.499, 127.061)
+    );
+
+    const iconPath = "icons/help-svgrepo-com.svg"; // Update this path to your SVG icon
+    const overlay = new SVGOverlay(bounds, iconPath);
+    overlay.setMap(map);
   };
 
   const onUnmount = () => {
@@ -87,6 +176,7 @@ export default function Page() {
       });
   }, []);
 
+
   return isLoaded ? (
     <div style={{ position: "relative" }}>
       <GoogleMap
@@ -103,3 +193,4 @@ export default function Page() {
     <Skeleton height="50vh" />
   );
 }
+
