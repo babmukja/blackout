@@ -1,11 +1,11 @@
 "use client"
 
-import React from "react";
+import { useState, useEffect, useRef } from "react";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 
 const containerStyle = {
   width: "100%",
-  height: "100vh",
+  height: "50vh",
 };
 
 type LatLng = {
@@ -22,9 +22,9 @@ const center: LatLng = {
 const zoomLevel = 17;
 
 const CustomUI = ({ position }: { position: LatLng }) => {
-  const [style, setStyle] = React.useState({});
+  const [style, setStyle] = useState({});
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Google Maps Projection을 활용하여 UI 위치 계산
     const overlay = new google.maps.OverlayView();
     overlay.onAdd = function () {};
@@ -55,10 +55,10 @@ const CustomUI = ({ position }: { position: LatLng }) => {
 export default function Page() {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "", // 환경변수로 API 키 설정
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
   });
 
-  const mapRef = React.useRef(null);
+  const mapRef = useRef(null);
 
   const onLoad = (map: any) => {
     mapRef.current = map;
