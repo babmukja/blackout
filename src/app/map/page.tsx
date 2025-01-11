@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, RefObject } from "react";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import { Skeleton } from "@chakra-ui/react";
 import { GeoFence } from "../api/data/route";
@@ -23,12 +23,55 @@ const center: LatLng = {
 
 const zoomLevel = 17;
 
-const CustomUI = ({ position }: { position: LatLng }) => {
-  const [style, setStyle] = useState({});
+const NoParkingZones = ({ mapRef, data }: { mapRef: React.RefObject<google.maps.Map | null>, data: GeoFence | null }) => {
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const polygons = [];
+    if (data?.no_parking_zones) {
+      for (const zones of data?.no_parking_zones) {
+        const polygonCoords = zones.bounds.map((coord) => {
+          const [lng, lat] = coord;
+          return { lat, lng };
+        });
+
+        const polygon = new google.maps.Polygon({
+          paths: polygonCoords,
+          strokeColor: "#FF0000",
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: "#FF0000",
+          fillOpacity: 0.35,
+        });
+        polygons.push(polygon);
+      }
+    }
+
+    for (const polygon of polygons) {
+      polygon.setMap(mapRef.current);
+    }
+  }, [mapRef]);
+
+  return null;
+};
+
+export default function Page() {
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+  });
+  const mapRef = useRef<google.maps.Map>(null);
   const [data, setData] = useState<GeoFence | null>(null);
 
+  const onLoad = (map: any) => {
+    mapRef.current = map;
+  };
+
+  const onUnmount = () => {
+    mapRef.current = null;
+  };
+
   useEffect(() => {
-    // 데이터
     fetch("/api/data")
       .then((response) => {
         if (!response.ok) {
@@ -42,49 +85,7 @@ const CustomUI = ({ position }: { position: LatLng }) => {
       .catch((error) => {
         console.error(error);
       });
-
-    // Google Maps Projection을 활용하여 UI 위치 계산
-    const overlay = new google.maps.OverlayView();
-    overlay.onAdd = function () {};
-    overlay.draw = function () {
-      const projection = this.getProjection();
-      if (projection) {
-        const point = projection.fromLatLngToDivPixel(
-          new google.maps.LatLng(position.lat, position.lng)
-        );
-        setStyle({
-          position: "absolute",
-          left: `${point?.x}px`,
-          top: `${point?.y}px`,
-          backgroundColor: "white",
-          border: "1px solid #ccc",
-          padding: "10px",
-          borderRadius: "5px",
-        });
-      }
-    };
-    overlay.onRemove = function () {};
-    overlay.setMap(null); // API 로드 완료 후 맵 연결
-  }, [position]);
-
-  return <div style={style}></div>;
-};
-
-export default function Page() {
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-  });
-
-  const mapRef = useRef(null);
-
-  const onLoad = (map: any) => {
-    mapRef.current = map;
-  };
-
-  const onUnmount = () => {
-    mapRef.current = null;
-  };
+  }, []);
 
   return isLoaded ? (
     <div style={{ position: "relative" }}>
@@ -95,7 +96,7 @@ export default function Page() {
         onLoad={onLoad}
         onUnmount={onUnmount}
       >
-        <CustomUI position={center} />
+        <NoParkingZones mapRef={mapRef} data={data} />
       </GoogleMap>
     </div>
   ) : (
