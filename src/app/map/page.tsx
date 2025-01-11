@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
+import { Skeleton } from "@chakra-ui/react";
 
 const containerStyle = {
   width: "100%",
@@ -49,7 +50,7 @@ const CustomUI = ({ position }: { position: LatLng }) => {
     overlay.setMap(null); // API 로드 완료 후 맵 연결
   }, [position]);
 
-  return <div style={style}>Hello, Custom UI!</div>;
+  return <div style={style}></div>;
 };
 
 export default function Page() {
@@ -81,6 +82,6 @@ export default function Page() {
       </GoogleMap>
     </div>
   ) : (
-    <div>Loading...</div>
+    <Skeleton height="50vh" />
   );
 }
