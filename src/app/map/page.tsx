@@ -67,15 +67,15 @@ export default function Page() {
   const onLoad = (map: google.maps.Map) => {
     mapRef.current = map;
 
-    class USGSOverlay extends google.maps.OverlayView {
+    class SVGOverlay extends google.maps.OverlayView {
       private bounds: google.maps.LatLngBounds;
-      private image: string;
+      private iconPath: string;
       private div?: HTMLElement;
 
-      constructor(bounds: google.maps.LatLngBounds, image: string) {
+      constructor(bounds: google.maps.LatLngBounds, iconPath: string) {
         super();
         this.bounds = bounds;
-        this.image = image;
+        this.iconPath = iconPath;
       }
 
       onAdd() {
@@ -85,7 +85,7 @@ export default function Page() {
         this.div.style.position = "absolute";
 
         const img = document.createElement("img");
-        img.src = this.image;
+        img.src = this.iconPath;
         img.style.width = "100%";
         img.style.height = "100%";
         img.style.position = "absolute";
@@ -147,12 +147,12 @@ export default function Page() {
     }
 
     const bounds = new google.maps.LatLngBounds(
-      new google.maps.LatLng(62.281819, -150.287132),
-      new google.maps.LatLng(62.400471, -150.005608)
+      new google.maps.LatLng(37.498, 127.060),
+      new google.maps.LatLng(37.499, 127.061)
     );
 
-    const image = "https://developers.google.com/maps/documentation/javascript/examples/full/images/talkeetna.png";
-    const overlay = new USGSOverlay(bounds, image);
+    const iconPath = "icons/help-svgrepo-com.svg"; // Update this path to your SVG icon
+    const overlay = new SVGOverlay(bounds, iconPath);
     overlay.setMap(map);
   };
 
@@ -175,6 +175,7 @@ export default function Page() {
         console.error(error);
       });
   }, []);
+
 
   return isLoaded ? (
     <div style={{ position: "relative" }}>
