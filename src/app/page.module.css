@@ -164,5 +164,6 @@ a.secondary {
 @media (prefers-color-scheme: dark) {
   .logo {
     filter: invert();
+    margin: 0 0 15 0;
   }
 }
