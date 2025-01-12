@@ -78,7 +78,12 @@ export default function Page() {
         onUnmount={onUnmount}
       >
         <NoParkingZones mapRef={mapRef} data={data} />
-        <SVGOverlay mapRef={mapRef} bounds={overlayBounds} iconPath={iconPath} />
+        <SVGOverlay
+          mapRef={mapRef}
+          overlays={[
+        { position: { lat: overlayBounds.north, lng: overlayBounds.east }, iconPath },
+          ]}
+        />
       </GoogleMap>
     </div>
   ) : (
