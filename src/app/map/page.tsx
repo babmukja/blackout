@@ -115,7 +115,7 @@ export default function Page() {
       >
         <NoParkingZones mapRef={mapRef} data={data} />
 
-<!--    <SVGOverlay mapRef={mapRef} bounds={overlayBounds} iconPath={iconPath} /> -->
+        {/* <SVGOverlay mapRef={mapRef} bounds={overlayBounds} iconPath={iconPath} /> */}
         <Path mapRef={mapRef} origin={origin} destination={destinatin} />
 
         <SVGOverlay mapRef={mapRef} overlays={overlays} />
