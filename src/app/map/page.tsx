@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import { Skeleton } from "@chakra-ui/react";
 import { GeoFence } from "../api/data/route";
-import { NoParkingZones } from "./zones";
+import { NoParkingZones, WhitelistZones } from "./zones";
 import SVGOverlay from "./overlayIcon";
 import Path from "./path";
 import Papa, { ParseResult } from 'papaparse';
@@ -119,7 +119,7 @@ export default function Page() {
         <Path mapRef={mapRef} origin={origin} destination={destinatin} />
 
         <SVGOverlay mapRef={mapRef} overlays={overlays} />
-
+        <WhitelistZones mapRef={mapRef} />
       </GoogleMap>
     </div>
   ) : (
