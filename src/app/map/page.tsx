@@ -58,19 +58,14 @@ export default function Page() {
   };
 
   useEffect(() => {
-    fetch("/api/data")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setData(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    fetch("/data/강남대치_geo_fence.json")
+    .then((res) => res.json())
+    .then((data) => {
+      setData(data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 
       fetch("/data/regionid_560_test_data.csv")
       .then((response) => response.text())
