@@ -36,8 +36,8 @@ const origin: LatLng = {
 };
 
 const destinatin: LatLng = {
-  lat: 37.500786, // 역삼역
-  lng: 127.036469,
+  lat: 37.498943,
+  lng: 127.060781,
 }
 
 export default function Page() {
@@ -112,7 +112,7 @@ export default function Page() {
         >
           <NoParkingZones mapRef={mapRef} data={data} />
           <SVGOverlay mapRef={mapRef} overlays={overlays} />
-          <Path mapRef={mapRef} origin={origin} destination={destinatin} />
+          {/* <Path mapRef={mapRef} origin={origin} destination={destinatin} /> */}
           <WhitelistZones mapRef={mapRef} />
         </GoogleMap>
       </div>
@@ -128,6 +128,7 @@ export default function Page() {
         backgroundColor={"#f1f3f4"}
         border={"none"}
         borderRadius={"8px"}
+        marginBottom={"30px"}
       >
         <Card.Body gap="2">
           <Card.Title mt="2">23 미터</Card.Title>
@@ -143,9 +144,9 @@ export default function Page() {
         borderRadius={"8px"}
       >
         <Card.Body gap="2">
-          <Card.Title mt="2">23 미터</Card.Title>
+          <Card.Title mt="2">39 미터</Card.Title>
           <Card.Description>
-            가장 가까운 주차 구역: 45 미터
+            가장 가까운 주차 구역: 38 미터
           </Card.Description>
         </Card.Body>
       </Card.Root>
