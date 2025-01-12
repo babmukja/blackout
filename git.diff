@@ -1,0 +1,104 @@
+diff --git a/package-lock.json b/package-lock.json
+index 1ea0bcf..9a435f0 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -19,12 +19,12 @@
+       },
+       "devDependencies": {
+         "@eslint/eslintrc": "^3",
+-        "@types/node": "^20",
+-        "@types/react": "^19",
++        "@types/node": "20.17.12",
++        "@types/react": "19.0.4",
+         "@types/react-dom": "^19",
+         "eslint": "^9",
+         "eslint-config-next": "15.1.4",
+-        "typescript": "^5"
++        "typescript": "5.7.3"
+       }
+     },
+     "node_modules/@ark-ui/react": {
+@@ -1238,6 +1238,7 @@
+       "resolved": "https://registry.npmjs.org/@types/node/-/node-20.17.12.tgz",
+       "integrity": "sha512-vo/wmBgMIiEA23A/knMfn/cf37VnuF52nZh5ZoW0GWt4e4sxNquibrMRJ7UQsA06+MBx9r/H1jsI9grYjQCQlw==",
+       "dev": true,
++      "license": "MIT",
+       "dependencies": {
+         "undici-types": "~6.19.2"
+       }
+@@ -1252,6 +1253,7 @@
+       "resolved": "https://registry.npmjs.org/@types/react/-/react-19.0.4.tgz",
+       "integrity": "sha512-3O4QisJDYr1uTUMZHA2YswiQZRq+Pd8D+GdVFYikTutYsTz+QZgWkAPnP7rx9txoI6EXKcPiluMqWPFV3tT9Wg==",
+       "dev": true,
++      "license": "MIT",
+       "dependencies": {
+         "csstype": "^3.0.2"
+       }
+@@ -5735,6 +5737,7 @@
+       "resolved": "https://registry.npmjs.org/typescript/-/typescript-5.7.3.tgz",
+       "integrity": "sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw==",
+       "dev": true,
++      "license": "Apache-2.0",
+       "bin": {
+         "tsc": "bin/tsc",
+         "tsserver": "bin/tsserver"
+diff --git a/package.json b/package.json
+index 715ea3f..4217862 100644
+--- a/package.json
++++ b/package.json
+@@ -20,11 +20,11 @@
+   },
+   "devDependencies": {
+     "@eslint/eslintrc": "^3",
+-    "@types/node": "^20",
+-    "@types/react": "^19",
++    "@types/node": "20.17.12",
++    "@types/react": "19.0.4",
+     "@types/react-dom": "^19",
+     "eslint": "^9",
+     "eslint-config-next": "15.1.4",
+-    "typescript": "^5"
++    "typescript": "5.7.3"
+   }
+ }
+diff --git a/src/app/map/page.tsx b/src/app/map/page.tsx
+index 0090354..f58071e 100644
+--- a/src/app/map/page.tsx
++++ b/src/app/map/page.tsx
+@@ -6,6 +6,7 @@ import { Skeleton } from "@chakra-ui/react";
+ import { GeoFence } from "../api/data/route";
+ import { NoParkingZones } from "./zones";
+ import SVGOverlay from "./overlayIcon";
++// import Path from "./path";
+ 
+ const containerStyle = {
+   width: "100%",
+@@ -24,8 +25,20 @@ const center: LatLng = {
+   lng: 127.060913,
+ };
+ 
++
+ const zoomLevel = 17;
+ 
++const origin: LatLng = {
++  // 은마사거리
++  lat: 37.498973,
++  lng: 127.060913,
++};
++
++const destinatin: LatLng = {
++  lat: 37.500786, // 역삼역
++  lng: 127.036469,
++}
++
+ export default function Page() {
+   const { isLoaded } = useJsApiLoader({
+     id: "google-map-script",
+@@ -79,6 +92,7 @@ export default function Page() {
+       >
+         <NoParkingZones mapRef={mapRef} data={data} />
+         <SVGOverlay mapRef={mapRef} bounds={overlayBounds} iconPath={iconPath} />
++        {/* <Path mapRef={mapRef} origin={origin} destination={destinatin} /> */}
+       </GoogleMap>
+     </div>
+   ) : (
