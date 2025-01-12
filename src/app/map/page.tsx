@@ -6,6 +6,7 @@ import { Skeleton } from "@chakra-ui/react";
 import { GeoFence } from "../api/data/route";
 import { NoParkingZones } from "./zones";
 import SVGOverlay from "./overlayIcon";
+import Papa, { ParseResult } from 'papaparse';
 
 const containerStyle = {
   width: "100%",
@@ -33,6 +34,7 @@ export default function Page() {
   });
   const mapRef = useRef<google.maps.Map>(null);
   const [data, setData] = useState<GeoFence | null>(null);
+  const [overlays, setOverlays] = useState<any[]>([]);
 
   const onLoad = (map: google.maps.Map) => {
     mapRef.current = map;
@@ -56,6 +58,27 @@ export default function Page() {
       .catch((error) => {
         console.error(error);
       });
+
+      fetch("/data/regionid_560_test_data.csv")
+      .then((response) => response.text())
+      .then((csvText) => {
+        Papa.parse(csvText, {
+          header: true,
+          complete: (results: ParseResult<any>) => {
+            const coords = results.data
+              .slice(350, 400)
+              .filter((_: any, index: number) => index % 5 === 0)
+              .map((row: any) => ({
+                position: {
+                  lat: parseFloat(row.end_lat),
+                  lng: parseFloat(row.end_lng),
+                },
+                iconPath: "/icons/help-svgrepo-com.svg", // Update this path to your SVG icon
+              }));
+            setOverlays(coords);
+          },
+        });
+      });
   }, []);
 
   const overlayBounds = {
@@ -78,7 +101,7 @@ export default function Page() {
         onUnmount={onUnmount}
       >
         <NoParkingZones mapRef={mapRef} data={data} />
-        <SVGOverlay mapRef={mapRef} bounds={overlayBounds} iconPath={iconPath} />
+        <SVGOverlay mapRef={mapRef} overlays={overlays} />
       </GoogleMap>
     </div>
   ) : (

@@ -2,24 +2,28 @@
 
 import React, { useEffect } from "react";
 
-interface Props {
-  mapRef: React.RefObject<google.maps.Map | null>
-  bounds: google.maps.LatLngBoundsLiteral;
-  iconPath: string;
+interface LatLng {
+  lat: number;
+  lng: number;
 }
 
-const SVGOverlay = ({ mapRef, bounds, iconPath }: Props) => {
+interface OverlayProps {
+  mapRef: React.RefObject<google.maps.Map | null>;
+  overlays: { position: LatLng; iconPath: string }[];
+}
+
+const SVGOverlay = ({ mapRef, overlays }: OverlayProps) => {
   useEffect(() => {
     if (!mapRef.current) return;
 
     class CustomSVGOverlay extends google.maps.OverlayView {
-      private bounds: google.maps.LatLngBounds;
+      private position: LatLng;
       private iconPath: string;
       private div?: HTMLElement;
 
-      constructor(bounds: google.maps.LatLngBounds, iconPath: string) {
+      constructor(position: LatLng, iconPath: string) {
         super();
-        this.bounds = bounds;
+        this.position = position;
         this.iconPath = iconPath;
       }
 
@@ -31,8 +35,8 @@ const SVGOverlay = ({ mapRef, bounds, iconPath }: Props) => {
 
         const img = document.createElement("img");
         img.src = this.iconPath;
-        img.style.width = "100%";
-        img.style.height = "100%";
+        img.style.width = "50px"; 
+        img.style.height = "50px";
         img.style.position = "absolute";
         this.div.appendChild(img);
 
@@ -42,14 +46,13 @@ const SVGOverlay = ({ mapRef, bounds, iconPath }: Props) => {
 
       draw() {
         const overlayProjection = this.getProjection();
-        const sw = overlayProjection.fromLatLngToDivPixel(this.bounds.getSouthWest())!;
-        const ne = overlayProjection.fromLatLngToDivPixel(this.bounds.getNorthEast())!;
+        const position = overlayProjection.fromLatLngToDivPixel(new google.maps.LatLng(this.position.lat, this.position.lng))!;
 
         if (this.div) {
-          this.div.style.left = sw.x + "px";
-          this.div.style.top = ne.y + "px";
-          this.div.style.width = ne.x - sw.x + "px";
-          this.div.style.height = sw.y - ne.y + "px";
+          const iconWidth = 50; 
+          const iconHeight = 50;
+          this.div.style.left = position.x - iconWidth / 2 + "px"; 
+          this.div.style.top = position.y - iconHeight / 2 + "px"; 
         }
       }
 
@@ -61,18 +64,16 @@ const SVGOverlay = ({ mapRef, bounds, iconPath }: Props) => {
       }
     }
 
-    const latLngBounds = new google.maps.LatLngBounds(
-      new google.maps.LatLng(bounds.south, bounds.west),
-      new google.maps.LatLng(bounds.north, bounds.east)
-    );
-
-    const overlay = new CustomSVGOverlay(latLngBounds, iconPath);
-    overlay.setMap(mapRef.current);
+    const overlayInstances = overlays.map(({ position, iconPath }) => {
+      const overlay = new CustomSVGOverlay(position, iconPath);
+      overlay.setMap(mapRef.current);
+      return overlay;
+    });
 
     return () => {
-      overlay.setMap(null);
+      overlayInstances.forEach((overlay) => overlay.setMap(null));
     };
-  }, [mapRef.current, bounds, iconPath]);
+  }, [mapRef.current, overlays]);
 
   return null;
 };
