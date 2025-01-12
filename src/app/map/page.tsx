@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
-import { Box, Card, Skeleton, Text } from "@chakra-ui/react";
+import { AccordionItem, AccordionItemContent, AccordionItemTrigger, AccordionRoot, Box, Button, Card, Flex, Skeleton, Text } from "@chakra-ui/react";
 import { GeoFence } from "../api/data/route";
 import { NoParkingZones, WhitelistZones } from "./zones";
 import SVGOverlay from "./overlayIcon";
 import Path from "./path";
 import Papa, { ParseResult } from 'papaparse';
+import { useRouter } from "next/navigation";
 
 const containerStyle = {
   width: "100%",
@@ -29,15 +30,24 @@ const center: LatLng = {
 
 const zoomLevel = 17;
 
-const origin: LatLng = {
-  // 은마사거리
-  lat: 37.498973,
-  lng: 127.060913,
-};
+function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number) {
+  const R = 6371000;
 
-const destinatin: LatLng = {
-  lat: 37.498943,
-  lng: 127.060781,
+  const toRadians = (degree: number) => (degree * Math.PI) / 180;
+
+  const phi1 = toRadians(lat1);
+  const phi2 = toRadians(lat2);
+  const deltaPhi = toRadians(lat2 - lat1);
+  const deltaLambda = toRadians(lng2 - lng1);
+
+  const a =
+    Math.sin(deltaPhi / 2) ** 2 +
+    Math.cos(phi1) * Math.cos(phi2) * Math.sin(deltaLambda / 2) ** 2;
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  const distance = R * c;
+  return distance;
 }
 
 export default function Page() {
@@ -48,6 +58,7 @@ export default function Page() {
   const mapRef = useRef<google.maps.Map>(null);
   const [data, setData] = useState<GeoFence | null>(null);
   const [overlays, setOverlays] = useState<any[]>([]);
+  const router = useRouter();
 
   const onLoad = (map: google.maps.Map) => {
     mapRef.current = map;
@@ -89,16 +100,6 @@ export default function Page() {
       });
   }, []);
 
-  const overlayBounds = {
-    north: 37.499,
-    south: 37.498,
-    east: 127.061,
-    west: 127.060,
-  };
-
-  const iconPath = "icons/help-svgrepo-com.svg";
-
-
   return (
     <>
     {isLoaded ? (
@@ -123,33 +124,39 @@ export default function Page() {
       <Text fontSize={"24px"} fontWeight={"700"} marginTop={"30px"} marginBottom={"30px"}>
         지쿠를 구해주세요!
       </Text>
-      <Card.Root 
-        width="full"
-        backgroundColor={"#f1f3f4"}
-        border={"none"}
-        borderRadius={"8px"}
-        marginBottom={"30px"}
-      >
-        <Card.Body gap="2">
-          <Card.Title mt="2">23 미터</Card.Title>
-          <Card.Description>
-            가장 가까운 주차 구역: 45 미터
-          </Card.Description>
-        </Card.Body>
-      </Card.Root>
-      <Card.Root 
-        width="full"
-        backgroundColor={"#f1f3f4"}
-        border={"none"}
-        borderRadius={"8px"}
-      >
-        <Card.Body gap="2">
-          <Card.Title mt="2">39 미터</Card.Title>
-          <Card.Description>
-            가장 가까운 주차 구역: 38 미터
-          </Card.Description>
-        </Card.Body>
-      </Card.Root>
+      <AccordionRoot collapsible defaultValue={["b"]} size="lg">
+      {overlays.map((item, idx) => {
+        const distance = Math.floor(
+          haversineDistance(center.lat, center.lng, item.position.lat, item.position.lng)
+        );
+
+        return (
+          <Card.Root 
+            width="full"
+            backgroundColor={"#f1f3f4"}
+            border={"none"}
+            borderRadius={"8px"}
+            marginBottom={"30px"}
+            key={idx}
+          >
+            <AccordionItem value={idx.toString()}>
+              <AccordionItemTrigger>
+                <Card.Body gap="2">
+                  <Card.Title mt="2">{distance} 미터</Card.Title>
+                  <Card.Description>
+                  </Card.Description>
+                </Card.Body>  
+              </AccordionItemTrigger>
+              <AccordionItemContent>
+                <Flex width={"full"} justifyContent={"center"} marginBottom={"30px"}>
+                  <Button width={"80%"} backgroundColor={"#28C86E"} onClick={() => router.push("/map/reward")}>구하기!</Button>
+                </Flex>
+              </AccordionItemContent>
+            </AccordionItem>
+          </Card.Root>
+        )
+      })}
+    </AccordionRoot>
     </Box>
     </>
   )
