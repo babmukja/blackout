@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect, useRef, RefObject } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import { Skeleton } from "@chakra-ui/react";
 import { GeoFence } from "../api/data/route";
 import { NoParkingZones } from "./zones";
+import SVGOverlay from "./overlayIcon";
 
 const containerStyle = {
   width: "100%",
@@ -35,88 +36,6 @@ export default function Page() {
 
   const onLoad = (map: google.maps.Map) => {
     mapRef.current = map;
-
-    class SVGOverlay extends google.maps.OverlayView {
-      private position: LatLng;
-      private iconPath: string;
-      private div?: HTMLElement;
-
-      constructor(position: LatLng, iconPath: string) {
-        super();
-        this.position = position;
-        this.iconPath = iconPath;
-      }
-
-      onAdd() {
-        this.div = document.createElement("div");
-        this.div.style.borderStyle = "none";
-        this.div.style.borderWidth = "0px";
-        this.div.style.position = "absolute";
-
-        const img = document.createElement("img");
-        img.src = this.iconPath;
-        img.style.width = "50px"; // Fixed size
-        img.style.height = "50px"; // Fixed size
-        img.style.position = "absolute";
-        this.div.appendChild(img);
-
-        const panes = this.getPanes()!;
-        panes.overlayLayer.appendChild(this.div);
-      }
-
-      draw() {
-        const overlayProjection = this.getProjection();
-        const position = overlayProjection.fromLatLngToDivPixel(new google.maps.LatLng(this.position.lat, this.position.lng))!;
-
-        if (this.div) {
-          const iconWidth = 50; 
-          const iconHeight = 50;
-          this.div.style.left = position.x - iconWidth / 2 + "px"; 
-          this.div.style.top = position.y - iconHeight / 2 + "px"; 
-        }
-      }
-
-      onRemove() {
-        if (this.div) {
-          (this.div.parentNode as HTMLElement).removeChild(this.div);
-          delete this.div;
-        }
-      }
-
-      hide() {
-        if (this.div) {
-          this.div.style.visibility = "hidden";
-        }
-      }
-
-      show() {
-        if (this.div) {
-          this.div.style.visibility = "visible";
-        }
-      }
-
-      toggle() {
-        if (this.div) {
-          if (this.div.style.visibility === "hidden") {
-            this.show();
-          } else {
-            this.hide();
-          }
-        }
-      }
-
-      toggleDOM(map: google.maps.Map) {
-        if (this.getMap()) {
-          this.setMap(null);
-        } else {
-          this.setMap(map);
-        }
-      }
-    }
-
-    const iconPath = "icons/help-svgrepo-com.svg"; // Update this path to your SVG icon
-    const overlay = new SVGOverlay(center, iconPath);
-    overlay.setMap(map);
   };
 
   const onUnmount = () => {
@@ -139,6 +58,15 @@ export default function Page() {
       });
   }, []);
 
+  const overlayBounds = {
+    north: 37.499,
+    south: 37.498,
+    east: 127.061,
+    west: 127.060,
+  };
+
+  const iconPath = "icons/help-svgrepo-com.svg";
+
 
   return isLoaded ? (
     <div style={{ position: "relative" }}>
@@ -150,6 +78,7 @@ export default function Page() {
         onUnmount={onUnmount}
       >
         <NoParkingZones mapRef={mapRef} data={data} />
+        <SVGOverlay mapRef={mapRef} bounds={overlayBounds} iconPath={iconPath} />
       </GoogleMap>
     </div>
   ) : (
