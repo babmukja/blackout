@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
-import { Skeleton } from "@chakra-ui/react";
+import { Box, Card, Skeleton, Text } from "@chakra-ui/react";
 import { GeoFence } from "../api/data/route";
 import { NoParkingZones, WhitelistZones } from "./zones";
 import SVGOverlay from "./overlayIcon";
@@ -99,26 +99,60 @@ export default function Page() {
   const iconPath = "icons/help-svgrepo-com.svg";
 
 
-  return isLoaded ? (
-    <div style={{ position: "relative" }}>
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={zoomLevel}
-        onLoad={onLoad}
-        onUnmount={onUnmount}
+  return (
+    <>
+    {isLoaded ? (
+      <div style={{ position: "relative" }}>
+        <GoogleMap
+          mapContainerStyle={containerStyle}
+          center={center}
+          zoom={zoomLevel}
+          onLoad={onLoad}
+          onUnmount={onUnmount}
+        >
+          <NoParkingZones mapRef={mapRef} data={data} />
+          <SVGOverlay mapRef={mapRef} overlays={overlays} />
+          <Path mapRef={mapRef} origin={origin} destination={destinatin} />
+          <WhitelistZones mapRef={mapRef} />
+        </GoogleMap>
+      </div>
+    ) : (
+      <Skeleton height="50vh" />
+    )}
+    <Box>
+      <Text fontSize={"24px"} fontWeight={"700"} marginTop={"30px"} marginBottom={"30px"}>
+        지쿠를 구해주세요!
+      </Text>
+      <Card.Root 
+        width="full"
+        backgroundColor={"#f1f3f4"}
+        border={"none"}
+        borderRadius={"8px"}
       >
-        <NoParkingZones mapRef={mapRef} data={data} />
-
-        {/* <SVGOverlay mapRef={mapRef} bounds={overlayBounds} iconPath={iconPath} /> */}
-        <Path mapRef={mapRef} origin={origin} destination={destinatin} />
-
-        <SVGOverlay mapRef={mapRef} overlays={overlays} />
-        <WhitelistZones mapRef={mapRef} />
-      </GoogleMap>
-    </div>
-  ) : (
-    <Skeleton height="50vh" />
-  );
+        <Card.Body gap="2">
+          <Card.Title mt="2">23 미터</Card.Title>
+          <Card.Description>
+            가장 가까운 주차 구역: 45 미터
+          </Card.Description>
+        </Card.Body>
+      </Card.Root>
+      <Card.Root 
+        width="full"
+        backgroundColor={"#f1f3f4"}
+        border={"none"}
+        borderRadius={"8px"}
+      >
+        <Card.Body gap="2">
+          <Card.Title mt="2">23 미터</Card.Title>
+          <Card.Description>
+            가장 가까운 주차 구역: 45 미터
+          </Card.Description>
+        </Card.Body>
+      </Card.Root>
+    </Box>
+    </>
+  )
+  
+  
 }
 
