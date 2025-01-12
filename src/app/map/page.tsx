@@ -142,14 +142,18 @@ export default function Page() {
             <AccordionItem value={idx.toString()}>
               <AccordionItemTrigger>
                 <Card.Body gap="2">
-                  <Card.Title mt="2">{distance} 미터</Card.Title>
-                  <Card.Description>
-                  </Card.Description>
+                  <Flex justifyContent={"space-between"}>
+                    <Text fontWeight={"700"}>{distance} 미터</Text>
+                    <Box>
+                      <Text>GCOO-B{Math.floor(Math.random() * 10)}</Text>
+                      <Text>{Math.floor(100000 + Math.random() * 900000)}</Text>
+                    </Box>
+                  </Flex>
                 </Card.Body>  
               </AccordionItemTrigger>
               <AccordionItemContent>
                 <Flex width={"full"} justifyContent={"center"} marginBottom={"30px"}>
-                  <Button width={"80%"} backgroundColor={"#28C86E"} onClick={() => router.push("/map/reward")}>구하기!</Button>
+                  <Button width={"90%"} backgroundColor={"#28C86E"} onClick={() => router.push("/map/reward")}>구하기!</Button>
                 </Flex>
               </AccordionItemContent>
             </AccordionItem>
