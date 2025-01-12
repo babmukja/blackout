@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GBike, 타는 재미를 넘어 쓰는 재미를 더하다
 
-## Getting Started
+GCoo Road, by the Let's Eat Team, is a web application that provides solutions to improve the social perception of GCoo rental scooters. Throught its two main features, 1) GCoo Road and 2) Let's Gcoo (지쿠를 지켜라), the application aims to provide a solution that can help users to use GCoo scooters more safely and responsibly while also providing value to the community.
 
+## Features
+
+### GCoo Road
+GCoo Road is a feature that provides recommended routes around the users that are reachable through GCoo scooters. The feature is designed to help users to find the best routes when travelling with GCoo scooters. The feature also provides information about the distance, estimated time, and the number of GCoo scooters available at the destination.
+
+### Let's Gcoo (지쿠를 지켜라)
+Let's Gcoo is a feature that provides a platform for users to report and share information about GCoo scooters that are parked inappropriately. The feature allows users to view locations of GCoo scooters that are parked inappropriately and participate in making the community a better place by enabling the users to move the scooters to appropriate locations.
+
+## How-to
 First, run the development server:
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Members
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Hyunjoon Sung](https://github.com/sunghj1118)
+- [Jimin Yoo](https://github.com/yxxjimin)
+- [Chaerim Lim](https://github.com/C-limlim)
+- [Bodam Kim](https://github.com/qhdamm)
+- [Wooheng Lee](https://github.com/hengyinayo)
