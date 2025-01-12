@@ -68,13 +68,13 @@ export default function Page() {
     mapRef.current = map;
 
     class SVGOverlay extends google.maps.OverlayView {
-      private bounds: google.maps.LatLngBounds;
+      private position: LatLng;
       private iconPath: string;
       private div?: HTMLElement;
 
-      constructor(bounds: google.maps.LatLngBounds, iconPath: string) {
+      constructor(position: LatLng, iconPath: string) {
         super();
-        this.bounds = bounds;
+        this.position = position;
         this.iconPath = iconPath;
       }
 
@@ -86,8 +86,8 @@ export default function Page() {
 
         const img = document.createElement("img");
         img.src = this.iconPath;
-        img.style.width = "100%";
-        img.style.height = "100%";
+        img.style.width = "50px"; // Fixed size
+        img.style.height = "50px"; // Fixed size
         img.style.position = "absolute";
         this.div.appendChild(img);
 
@@ -97,14 +97,13 @@ export default function Page() {
 
       draw() {
         const overlayProjection = this.getProjection();
-        const sw = overlayProjection.fromLatLngToDivPixel(this.bounds.getSouthWest())!;
-        const ne = overlayProjection.fromLatLngToDivPixel(this.bounds.getNorthEast())!;
+        const position = overlayProjection.fromLatLngToDivPixel(new google.maps.LatLng(this.position.lat, this.position.lng))!;
 
         if (this.div) {
-          this.div.style.left = sw.x + "px";
-          this.div.style.top = ne.y + "px";
-          this.div.style.width = ne.x - sw.x + "px";
-          this.div.style.height = sw.y - ne.y + "px";
+          const iconWidth = 50; 
+          const iconHeight = 50;
+          this.div.style.left = position.x - iconWidth / 2 + "px"; 
+          this.div.style.top = position.y - iconHeight / 2 + "px"; 
         }
       }
 
@@ -146,13 +145,8 @@ export default function Page() {
       }
     }
 
-    const bounds = new google.maps.LatLngBounds(
-      new google.maps.LatLng(37.498, 127.060),
-      new google.maps.LatLng(37.499, 127.061)
-    );
-
     const iconPath = "icons/help-svgrepo-com.svg"; // Update this path to your SVG icon
-    const overlay = new SVGOverlay(bounds, iconPath);
+    const overlay = new SVGOverlay(center, iconPath);
     overlay.setMap(map);
   };
 
