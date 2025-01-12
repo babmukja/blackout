@@ -6,6 +6,7 @@ import { Skeleton } from "@chakra-ui/react";
 import { GeoFence } from "../api/data/route";
 import { NoParkingZones } from "./zones";
 import SVGOverlay from "./overlayIcon";
+import Path from "./path";
 import Papa, { ParseResult } from 'papaparse';
 
 const containerStyle = {
@@ -25,7 +26,19 @@ const center: LatLng = {
   lng: 127.060913,
 };
 
+
 const zoomLevel = 17;
+
+const origin: LatLng = {
+  // 은마사거리
+  lat: 37.498973,
+  lng: 127.060913,
+};
+
+const destinatin: LatLng = {
+  lat: 37.500786, // 역삼역
+  lng: 127.036469,
+}
 
 export default function Page() {
   const { isLoaded } = useJsApiLoader({
@@ -101,7 +114,12 @@ export default function Page() {
         onUnmount={onUnmount}
       >
         <NoParkingZones mapRef={mapRef} data={data} />
+
+<!--    <SVGOverlay mapRef={mapRef} bounds={overlayBounds} iconPath={iconPath} /> -->
+        <Path mapRef={mapRef} origin={origin} destination={destinatin} />
+
         <SVGOverlay mapRef={mapRef} overlays={overlays} />
+
       </GoogleMap>
     </div>
   ) : (
